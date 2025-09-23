@@ -1,0 +1,60 @@
+# MATLAB Files
+*.asv
+*.m~
+*.mex*
+*.mat
+*.fig
+*.p
+*.slx.autosave
+
+# Compiled MATLAB Functions
+*.o
+*.obj
+
+# MATLAB App Designer
+*.mlapp.bak
+
+# MATLAB Coder
+codegen/
+
+# Simulink
+*.slxc
+slprj/
+
+# Simulink Code Generation
+sfunction/
+
+# Build artifacts
+*.dll
+*.exe
+*.a
+*.lib
+
+# Cache files
+*.mexw32
+*.mexw64
+*.mexa64
+*.mexglx
+*.mexmaci64
+
+# Temporary files
+*~
+*.tmp
+*.temp
+Thumbs.db
+.DS_Store
+
+# IDE files
+.vscode/
+.idea/
+
+# Claude Code settings
+.claude/
+
+# Windows specific
+*.lnk
+
+# Output directories
+figures/
+plots/
+output/
