@@ -331,3 +331,102 @@ fprintf('f(%.1f) = %.1f\n', xloc, result);
 hold on;
 plot(xloc, result, 'ro', 'MarkerSize', 8, 'MarkerFaceColor', 'red');
 hold off;
+
+%% Section 12: Discontinuous Functions
+% A function f(x) is continuous at x=a if the following three conditions are met;
+% otherwise, the function is discontinuous at point a.
+
+% 1. f(a) is defined.
+% 2. The limit of f(x) as x approaches a exists.
+% 3. The limit of f(x) as x approaches a equals f(a).
+
+
+%% Jump Disconinuouty
+% Define the domain D.
+x = -1:0.01:2;
+y = NaN(size(x));
+
+% Loop through each x value to calculate the corresponding y.
+for i = 1:length(x)
+    if x(i) < 0
+        y(i) = sin(x(i)*pi);
+    elseif x(i) == 0
+        y(i) = 1.5;
+    else % x(i) > 0
+        y(i) = -(x(i)-2)^2;
+    end
+end
+
+% Plot the function.
+figure;
+plot(x(x<0), y(x<0), 'LineWidth', 2);
+hold on
+plot(x(x==0), y(x==0), 'o', 'MarkerFaceColor', 'red', 'MarkerEdgeColor', 'red');
+plot(x(x>0), y(x>0), 'LineWidth', 2);
+
+% To add the title, labels, and the single point at (0, 1.5).
+title('A function with a jump discontinuity');
+xlabel('x');
+ylabel('y=f(x)');
+hold off; % Resets the plot behavior.
+
+%% Removable Discontinuity
+% Domain
+x = -1:0.1:2;
+y = NaN(size(x));
+
+% Loop through each x value to calculate the corresponding y.
+for i = 1:length(x)
+    if x(i) == 0
+        y(i) = pi;
+    else % x(i) > 0
+        y(i) = sin(x(i)*pi) + x(i)^2;
+    end
+end
+
+% Plot the function.
+figure;
+plot(x, y, 'o');
+
+
+%% Infinite Discontinuity
+% f(x) = 3 / (1-x^2)
+% D : -2 <= x <= 2
+
+x = -2:0.1:2;
+
+y = 3 ./ (1-x.^2);
+
+plot(x, y, 'LineWidth', 2)
+xlim([-2,2])
+ylim([-14, 15.5])
+
+
+%% Solving with Symbolic
+% 1. Define the symbolic variable and the entire function
+syms x;
+f(x) = 3 / (1 - x^2);
+
+% 2. Automatically extract the denominator from the function
+[~, denominator] = numden(f); % The ~ ignores the numerator part
+
+% 3. Solve for where the denominator equals zero
+singularities = solve(denominator == 0, x);
+disp(singularities);
+
+
+%% Oscillating Discontinuity
+% 1. Create a numerical vector for x
+x_vals = linspace(-1, 2, 200);
+
+% 2. Calculate y
+y_vals = sin(0.1 ./ (1 - x_vals));
+
+% 3. Manually insert a break at the singularity to prevent a connecting line
+y_vals(abs(x_vals - 1) < 0.01) = NaN; 
+
+% 4. Use the standard plot function
+plot(x_vals, y_vals, 'LineWidth', 1);
+grid on;
+xlabel('x');
+ylabel('y');
