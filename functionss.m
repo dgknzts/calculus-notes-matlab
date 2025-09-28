@@ -430,3 +430,129 @@ plot(x_vals, y_vals, 'LineWidth', 1);
 grid on;
 xlabel('x');
 ylabel('y');
+
+
+%% Composite Functions
+x = linspace(-5,5,100);
+
+fx = 2.*x.^2 - 4;
+gx = 7.*abs(x) + 3;
+
+fgx = 2.*gx.^2 - 4;
+gfx = 7.*abs(fx) + 3;
+
+figure;
+plot(x, fx, "LineWidth", 2);
+hold on;
+plot(x, gx, "LineWidth", 2);
+plot(x, fgx, "LineWidth", 2);
+plot(x, gfx, "LineWidth", 2);
+ylim([-10,50]);
+xlim([-3 3])
+legend('$f(x) = 2x^2 - 4$', ...
+       '$g(x) = 7|x| + 3$', ...
+       '$f(g(x))$', ...
+       '$g(f(x))$', ...
+       'Interpreter', 'latex', ...
+       'Location', 'best');
+ax = gca;
+ax.XAxisLocation = 'origin';
+ax.YAxisLocation = 'origin';
+box off;
+grid on;
+hold off;
+
+%% More about composite functions in """symbolic""" package. Better.
+% 1. Define 'x' as a symbolic variable
+clear;
+clc;
+syms x
+
+% 2. Define f(x) and g(x) as symbolic functions
+f(x) = log(2*x);
+g(x) = exp(x) / 2;
+
+% 3. Compose the functions symbolically. The syntax is very intuitive.
+fgx(x) = f(g(x)); % This computes f(g(x))
+gfx(x) = g(f(x)); % This computes g(f(x))
+
+% Display the resulting symbolic expressions in the command window
+fprintf('f(g(x)) = \n');
+disp(fgx);
+
+fprintf('g(f(x)) = \n');
+disp(gfx);
+
+% 4. Plot all four functions using a single fplot command
+figure;
+fplot([f(x), g(x), fgx(x)], [-1, 5], 'LineWidth', 2);
+hold on;
+fplot(gfx(x), [-1, 5], 'o', 'LineWidth', 2);
+ylim([-4, 10]);
+grid on;
+ax = gca;
+ax.XAxisLocation = 'origin';
+ax.YAxisLocation = 'origin';
+box off;
+legend('f(x)', 'g(x)', 'f(g(x))', 'g(f(x))', 'Location', 'northwest');
+hold off;
+
+%% Inverse Functions
+syms x
+
+% 2. Define f(x) and g(x) as symbolic functions
+f(x) = sin(x);
+g(x) = log(x);
+h(x) = 2*x^2 + 5;
+
+% 3. Compose the functions symbolically. The syntax is very intuitive.
+fghx(x) = f(g(h(x))); % This computes f(g(x))
+
+% Display the resulting symbolic expressions in the command window
+fprintf('f(g(h(x))) = \n');
+disp(fghx);
+
+% 4. Plot all four functions using a single fplot command
+figure;
+fplot(fghx(x), [-100, 100], 'LineWidth', 2);
+hold on;
+ylim([-1.2, 1.2]);
+grid on;
+ax = gca;
+ax.XAxisLocation = 'origin';
+ax.YAxisLocation = 'origin';
+box off;
+title(sprintf('f(g(h(x))) = %s', string(fghx(x))));
+hold off;
+
+%% Computing inverse with symbolic
+syms x
+
+% 2. Define f(x) and g(x) as symbolic functions
+f(x) = 2*x + 3;
+f_inv(x) = finverse(f);
+disp(f_inv);
+
+f_invf(x) = f_inv(f(x));
+ff_inv(x) = f(f_inv(x));
+
+g(x) = 2*x + sin(x);
+g_inv(x) = finverse(g);
+disp(g_inv)
+
+% Demonstrate that: f_inv(f(4)) = f(f_inv(4)) = 4
+disp(f_inv(f(4)) == f(f_inv(4)))
+
+figure;
+fplot(f_invf(x), [-1, 10], 'LineWidth', 2);
+hold on;
+fplot(ff_inv(x), [-1, 10], 'o', 'LineWidth', 2 );
+grid on;
+xline(4, '--r', 'LineWidth', 1.5, 'Label', 'x = 4');
+yline(4, '--r', 'LineWidth', 1.5, 'Label', 'y = 4');
+xlabel('x');
+ylabel('y');
+title('Verifying f_{inv}(f(x)) = f(f_{inv}(x)) = x');
+legend('f_{inv}(f(x))', 'f(f_{inv}(x))', 'Intersection at (4,4)', 'Location', 'best');
+axis equal; % Ensure x and y axes have the same scale
+hold off;
