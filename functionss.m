@@ -556,3 +556,138 @@ title('Verifying f_{inv}(f(x)) = f(f_{inv}(x)) = x');
 legend('f_{inv}(f(x))', 'f(f_{inv}(x))', 'Intersection at (4,4)', 'Location', 'best');
 axis equal; % Ensure x and y axes have the same scale
 hold off;
+
+%% Function Symmetry: Even and odd functions
+% f(x) = f(-x) : even
+% -f(x) = f(-x) : odd
+% Both of them are symmetric but there are also non-symmetric functions
+% Even and odd functions have special properties at are relevant for
+% derivatis and integrals. 
+
+%% Drawing Infinite Functions Exercise
+
+%% Exercise 1: Polynomials
+% Create a second order poly with random integer coef [-5 5]
+% f(x) = a1 + a2*x + a3*x^2
+% Print the function and plot it.
+
+% Random integer coefs
+coefs = randi([-5 5],1, 3);
+a1 = coefs(1);
+a2 = coefs(2);
+a3 = coefs(3);
+
+% Define f(x) 
+syms x
+f(x) = a1 + a2*x + a3*x^2;
+disp(f(x))
+
+% Find the points when x = 1,0,-1
+f(1)
+
+% Plot
+figure;
+fplot(f(x), [-4, 4], 'LineWidth', 2);
+hold on;
+plot(1, f(1), 'o', 'LineWidth', 3, 'MarkerFaceColor', 'red', 'MarkerEdgeColor', 'red')
+plot(-1, f(-1), 'o', 'LineWidth', 3, 'MarkerFaceColor', 'green', 'MarkerEdgeColor', 'green')
+plot(0, f(0), 'o', 'LineWidth', 3, 'MarkerFaceColor', 'black', 'MarkerEdgeColor', 'black')
+grid on;
+xline(0, '-black', 'LineWidth', 1);
+yline(0, '-black', 'LineWidth', 1);
+xlabel('x');
+ylabel('y');
+hold off;
+
+
+%% Exercise 2: e and cos
+% Create a cosine-scaled exponential with random integers [-3 3] excluding 0.
+% f(beta) = ae^-beta * cos(2*pi*beta)
+% Print and plot.
+
+coef = 0;
+while coef == 0
+    coef = randi([-3 3], 1, 1);
+end
+
+syms beta
+f(beta) = coef*(exp(1)^beta) * cos(2*pi*beta);
+disp(f(beta))
+
+% Plot
+figure;
+fplot(f(beta), [-5, 5], 'LineWidth', 2);
+hold on;
+plot(1, f(1), 'o', 'LineWidth', 3, 'MarkerFaceColor', 'red', 'MarkerEdgeColor', 'red')
+%plot(pi, f(pi), 'o', 'LineWidth', 3, 'MarkerFaceColor', 'green', 'MarkerEdgeColor', 'green')
+plot(0, f(0), 'o', 'LineWidth', 3, 'MarkerFaceColor', 'black', 'MarkerEdgeColor', 'black')
+grid on;
+xline(0, '-black', 'LineWidth', 1);
+yline(0, '-black', 'LineWidth', 1);
+xlabel('x');
+ylabel('y');
+hold off;
+
+%% Exercise 3: Random Piecewise Function
+% Define symbolic variable
+syms x
+
+% Define the symbolic functions
+f1 = x;           % for x <= 0
+f2 = x^2;         % for x <= 0
+f3 = x^3;         % for x <= 0
+f4 = log(x);      % for x > 0
+f5 = sqrt(x);     % for x > 0
+
+% Randomly select one function for each region
+choice_neg = randi(3);  % Random choice for x <= 0
+choice_pos = randi(2);  % Random choice for x > 0
+
+% Select the functions based on random choice
+if choice_neg == 1
+    f_neg = f1;
+    neg_name = 'x';
+elseif choice_neg == 2
+    f_neg = f2;
+    neg_name = 'x^2';
+else
+    f_neg = f3;
+    neg_name = 'x^3';
+end
+
+if choice_pos == 1
+    f_pos = f4;
+    pos_name = 'ln(x)';
+else
+    f_pos = f5;
+    pos_name = 'sqrt(x)';
+end
+
+% Print the randomly selected function
+fprintf('Randomly Selected Function:\n\n');
+fprintf('f(x) = { %s      , x <= 0\n', neg_name);
+fprintf('       { %s   , x > 0\n\n', pos_name);
+
+% Display symbolic form
+fprintf('Symbolic form:\n');
+fprintf('For x <= 0: '); disp(f_neg);
+fprintf('For x > 0:  '); disp(f_pos);
+
+% Create x values and evaluate
+x_neg = linspace(-3, 0, 100);
+x_pos = linspace(0.01, 3, 100);
+
+y_neg = double(subs(f_neg, x, x_neg));
+y_pos = double(subs(f_pos, x, x_pos));
+
+% Plot
+figure;
+hold on;
+plot(x_neg, y_neg, 'b-', 'LineWidth', 2);
+plot(x_pos, y_pos, 'r-', 'LineWidth', 2);
+xlabel('x');
+ylabel('f(x)');
+title('Random Piecewise Function');
+grid on;
+legend('x <= 0', 'x > 0');
+hold off;
