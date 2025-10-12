@@ -581,3 +581,94 @@ legend('g(\theta) = 1/\theta', 'f(\theta) = sin(\theta)/\theta', 'h(\theta) = -1
 
 hold off;
 
+%% Exercise: Crazy weirdo function
+clear; clc; close all;
+
+% --- 1. Define the Symbolic Functions ---
+% Define theta as a symbolic variable.
+syms x
+
+% The function we want to analyze
+f(x) = x^2* exp(-x^2)* log(x^2)* sin(x);
+
+fplot(f)
+grid on;
+box on;
+
+%% Print the x = 0 
+y = f(0);
+disp(y); % NaN
+fprintf('f(0) = %s\n', char(y));
+
+% Print the limit x -> 0 
+y_lim = limit(f(x), x, 0);
+fprintf('lim x -> 0, f(x) = %s\n', char(y_lim));
+
+%% Determine the domain of this weird function:
+% (-Inf, 0) U (0, Inf)
+% The restriction comes from the argument of the log function.
+inequality = x^2 > 0;
+
+% Solve the inequality for x to find the domain.
+dom_solve = solve(inequality, x);
+
+fprintf('The domain of the function is:\n');
+disp(dom_solve);
+%% Compute the limits for each part
+p1 = limit(x^2, x, 0);
+p2 = limit(exp(-x^2), x, 0);
+p3 = limit(log(x^2), x, 0);
+p4 = limit(sin(x), x, 0);
+
+fprintf('The limit of x^2 as x->0 is: %s\n', char(p1));
+fprintf('The limit of exp(-x^2) as x->0 is: %s\n', char(p2));
+fprintf('The limit of log(x^2) as x->0 is: %s\n', char(p3));
+fprintf('The limit of sin(x) as x->0 is: %s\n', char(p4));
+
+%% Limit possibilities
+% --- A Guide to Limit Possibilities in Calculus ---
+% This note summarizes the common cases encountered when evaluating limits and
+% their potential outcomes. It's divided into limits approaching a finite
+% number 'a' and limits at infinity.
+
+%% Part 1: Limits Approaching a Finite Number (lim x -> a)
+%
+% Label                   Case                        Outcomes                     Example
+% ---------------------   -------------------------   --------------------------   ------------------------------------
+% "Easy"                  lim f(x) = c                c (the constant itself)      lim (x+3)/1 as x->2 is 5
+%
+% "Nonzero over zero"     lim f(x) = c/0, (c~=0)      -inf, +inf, or DNE           lim (x+2)/(x-2) as x->2+ is +inf
+%
+% "Indeterminate (0/0)"   lim f(x) = 0/0              Use algebra or L'Hopital's   lim sin(x)/x as x->0 is 1
+
+
+%% Part 2: Limits at Infinity (lim x -> inf)
+%
+% Label                         Case                        Outcomes                     Example
+% ---------------------------   -------------------------   --------------------------   ------------------------------------
+% "Infinite over finite"      lim f(x) = inf / c          -inf, +inf                   lim sqrt(x)/2 as x->inf is +inf
+%
+% "Finite over infinite"      lim f(x) = c / inf          0                            lim cos(x)/x as x->inf is 0
+%
+% "Indeterminate (inf/inf)"   lim f(x) = inf / inf        Use algebra or L'Hopital's   lim exp(x)/x^3 as x->inf is +inf
+%                               (unbalanced growth)
+%
+% "Indeterminate (inf/inf)"   lim f(x) = inf / inf        A finite number              lim (x^2)/(2*x^2) as x->inf is 1/2
+%                               (balanced growth)
+
+
+%% What is "INFINITESIMAL"
+% epsilon = 1 / Inf 
+% Not exist in real numbers scale BUT
+% It is smaller than the smallest real number
+%
+% You can make calculations with them:
+% epsilon1 + epsilon2 = epsilon3
+% epsilon3 > epsilon1, epsilon2
+% epsilon^2 < epsilon
+
+% 0 < epsilon < r || r is the smallest number you can think
+% Infinitesimal : A number that is smaller than any real number
+
+%% 
+
