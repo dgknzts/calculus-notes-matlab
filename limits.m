@@ -473,3 +473,111 @@ box on;
 xlabel('x');
 ylabel('f(x)');
 title('$f(x) = \sin(1/x)$', 'Interpreter', 'latex', 'FontSize', 16);
+
+%% Limits of trig functions
+%% Verifying Two Important Trigonometric Limits
+clear; clc; close all;
+
+% 1. Define the symbolic variable
+syms x
+
+% 2. Define the two functions from the exercise
+f1 = sin(x) / x;
+f2 = (cos(x) - 1) / x;
+
+% 3. Calculate the limits as x approaches 0
+limit_f1 = limit(f1, x, 0);
+limit_f2 = limit(f2, x, 0);
+
+% 4. Display the results
+fprintf('The limit of sin(x)/x as x->0 is: %s\n', char(limit_f1));
+fprintf('The limit of (cos(x)-1)/x as x->0 is: %s\n', char(limit_f2));
+
+% 5. Visualize the limits
+figure('Color', 'white');
+
+% Subplot for sin(x)/x
+subplot(2, 1, 1);
+fplot(f1, [-10, 10], 'LineWidth', 2);
+hold on;
+plot(0, 1, 'ro', 'MarkerSize', 8, 'LineWidth', 2); % Mark the limit
+grid on;
+title('$\lim_{x \to 0} \frac{\sin(x)}{x} = 1$', 'Interpreter', 'latex', 'FontSize', 16);
+xlabel('x');
+ylabel('f(x)');
+
+% Subplot for (cos(x)-1)/x
+subplot(2, 1, 2);
+fplot(f2, [-10, 10], 'LineWidth', 2);
+hold on;
+plot(0, 0, 'ro', 'MarkerSize', 8, 'LineWidth', 2); % Mark the limit
+grid on;
+title('$\lim_{x \to 0} \frac{\cos(x)-1}{x} = 0$', 'Interpreter', 'latex', 'FontSize', 16);
+xlabel('x');
+ylabel('f(x)');
+
+%% Squeeze Theorem 
+
+% The Squeeze Theorem is a method to find the limit of a function that is
+% difficult to analyze directly. We do this by "squeezing" it between two
+% other, simpler functions whose limits are known.
+%
+% The core idea is:
+% 1. You have a complicated function, f(x)
+% 2. You find two simpler functions, g(x) and h(x) that trap 
+% f(x) between them: h(x) <= f(x) <= g(x).
+% 3. If the two "functions (g and h) meet at the SAME limit 'L' as
+%    they approach a point 'a', then the function f(x) has no
+%    choice but to also be squeezed to that same limit 'L'.
+
+%% Squeeze Theorem for a Limit at Infinity
+clear; clc; close all;
+
+% --- 1. Define the Symbolic Functions ---
+% Define theta as a symbolic variable.
+syms theta
+
+% The function we want to analyze
+f = sin(theta) / theta;
+
+% The two "squeezing" functions
+g = 1 / theta;  % The upper bound function
+h = -1 / theta; % The lower bound function
+
+
+% --- 2. Compute the Limits ---
+% Calculate the limit of all three functions as theta approaches infinity.
+limit_f = limit(f, theta, Inf);
+limit_g = limit(g, theta, Inf);
+limit_h = limit(h, theta, Inf);
+
+% Display the results in the Command Window.
+fprintf('Limit of g(theta) = 1/theta as theta -> inf:  %s\n', char(limit_g));
+fprintf('Limit of h(theta) = -1/theta as theta -> inf: %s\n\n', char(limit_h));
+fprintf('By the Squeeze Theorem, the limit of f(theta) is: %s\n', char(limit_f));
+
+
+% --- 3. Plot the Functions ---
+% Create a new figure and plot all three functions on the same axes.
+figure('Color', 'white');
+hold on; % Allow multiple plots
+
+% Define the plot range.
+plotRange = [-100, 100];
+
+% Plot the functions with specified colors and line widths.
+fplot(g, plotRange, 'r', 'LineWidth', 1.5);
+fplot(f, plotRange, 'k', 'LineWidth', 1.0);
+fplot(h, plotRange, 'b', 'LineWidth', 1.5);
+
+% Customize the plot for clarity.
+grid on;
+box on;
+ylim([-1, 1]); % Set y-axis limits to match the example
+xlabel('\theta');
+ylabel('f(\theta)');
+title('Squeeze Theorem: $\lim_{\theta\to\infty} \frac{\sin(\theta)}{\theta} = 0$', 'Interpreter', 'latex');
+legend('g(\theta) = 1/\theta', 'f(\theta) = sin(\theta)/\theta', 'h(\theta) = -1/\theta');
+
+hold off;
+
