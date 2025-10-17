@@ -670,5 +670,51 @@ fprintf('The limit of sin(x) as x->0 is: %s\n', char(p4));
 % 0 < epsilon < r || r is the smallest number you can think
 % Infinitesimal : A number that is smaller than any real number
 
-%% 
+%% Exercise: Factoring Problems
+clear; clc; close all;
+% Choose numbers random numbers for formulation
+list_1 = [-4, -3, -2, -1, 0, 1, 2, 3, 4];
+list_2 = [-1, 1];
 
+a = datasample(list_1, 1);
+b = datasample(list_1, 1);
+c = datasample(list_2, 1);
+
+% Define x as the only symbolic variable
+syms x
+
+% Define f as a function of x ONLY. 
+% a, b, and c are treated as the numeric constants assigned above.
+f(x) = c * (x^2 - (a+b)*x + a*b) / (x^2 + (b-a)*x - b*a);
+
+fprintf('Using values: a = %d, b = %d, c = %d\n\n', a, b, c);
+fplot(f, 'LineWidth', 2);
+pretty(f)
+% Play with function
+f_simp = simplify(f);
+pretty(f_simp)
+
+% Solve the limit x -> a
+L = limit(f, x, a);
+fprintf('Limit when x goes to %d: ', a);
+disp(L);
+
+
+%% New function
+clear; clc; close all;
+
+syms x
+f(x) = (-x^2 + 2*x + 3) / (x^2 + 4*x + 3);
+
+
+% Solve the limit x -> -1
+disp('Limit when x goes to  -1:')
+L_left = limit(f, x, -1, 'left');
+L_right = limit(f, x, -1, 'right');
+L_full = limit(f, x, -1);
+
+fprintf('   From the left:  %s\n', string(L_left));
+fprintf('   From the right: %s\n', string(L_right));
+fprintf('   Two-sided limit: %s\n', string(L_full));
+
+fplot(f, [-5, 4], 'LineWidth', 2);
