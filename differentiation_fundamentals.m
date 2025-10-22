@@ -119,3 +119,78 @@ fprintf('Average Local Slope:  %s\n', num2str(avg_local_slopes));
 % Slope when Δx is large..
 % Derivative when Δx is "infinitesimal"...
 
+%% Derivative of a line
+syms x
+f = (5/4)* x + 9/4;
+
+figure(1)
+figure('Color','white');
+fplot(f, [-5 6]);
+xlabel('x');
+ylabel('f(x)');
+ax = gca;
+ax.XAxisLocation = 'origin'; % Center the axes at (0,0)
+ax.YAxisLocation = 'origin';
+ax.XTick = -5:1:5;
+box off; % Remove the box outline
+
+aa = diff(f);
+fprintf('\n Derivative of f(x): %s\n', char(aa));
+
+%% Another one
+clear;
+clc;
+close all;
+
+syms x
+f = x^2;
+bb = diff(f);
+fprintf('\n Derivative of f(x): %s\n', char(bb));
+
+% Plot the derivative
+figure(1);
+fplot(bb);
+xlabel('x');
+ylabel('f(x)');
+ax = gca;
+ax.XAxisLocation = 'origin'; % Center the axes at (0,0)
+ax.YAxisLocation = 'origin';
+ax.XTick = -5:1:5;
+box off; % Remove the box outline
+
+
+deriv_at_neg1 = subs(bb, x, -1);
+deriv_at_0 = subs(bb, x, 0);
+deriv_at_2 = subs(bb, x, 2);
+
+% Print the results
+fprintf('\n Derivative of x = -1: %s\n', char(deriv_at_neg1));
+fprintf('\n Derivative of x = 0: %s\n', char(deriv_at_0));
+fprintf('\n Derivative of x = 2: %s\n', char(deriv_at_2));
+
+%% Derivative of summed terms
+clear; clc; close all;
+
+syms x a b c
+f1(x) = a*x^2;
+f2(x) = b*x^3;
+f3(x) = c*exp(2*x );
+combinedf(x) = f1(x) + f2(x) + f3(x); 
+
+% YOU CAN ALSO SELECT COMPONENTS OF A FUNCTION WITH THIS!!!!!!
+%components = children(combinedf);
+%disp(components{1})
+pretty(combinedf(x))
+
+% Derivatife of combined function
+j = diff(combinedf, x);
+pretty(j)
+% Derivative of ax^2
+pretty(diff(f1(x)))
+% Derivativ of b*x^3
+pretty(diff(f2(x)))
+% Derivative of c* exp(2*x)
+pretty(diff(f3(x)))
+
+
+
