@@ -194,3 +194,56 @@ pretty(diff(f3(x)))
 
 
 
+%% Derivatives of trig functions
+% sin'(x) = cos(x)
+% cos'(x) = -sin(x)
+
+clear; clc; close all;
+
+% Create x-variable from -1.5π to 1.5π
+dx = 0.1;
+x = -1.5*pi:dx:1.5*pi;
+
+% Calculate cos(x)
+y = cos(x);
+
+% Calculate the discrete derivative using diff
+dy_dx = diff(y) / dx;
+
+% Since diff reduces array size by 1, adjust x for the derivative
+x_diff = x(1:end-1);
+
+% Calculate -sin(x) for comparison
+neg_sin = -sin(x);
+
+% Create the plot
+figure(1);
+plot(x, y, 'LineWidth', 1, 'DisplayName', 'cos(x)');
+hold on;
+plot(x_diff, dy_dx, 'LineWidth', 1, 'DisplayName', 'diff(cos(x))');
+plot(x, neg_sin, 'o','LineWidth', 2, 'MarkerSize', 5, 'DisplayName', '-sin(x)');
+hold off;
+
+xlabel('Angle (rad.)');
+ylabel('Value');
+legend('show');
+grid on;
+title('Exercise 1: d/dx cos(x)');
+
+%% Do the exact same for (d/dx)* sin(x)
+clear; clc; close;
+
+dx = 0.1;
+x = -2*pi:dx:2*pi;
+
+fx = sin(x);
+fx_diff = diff(fx) / dx;
+x_diff = x(1:end-1);
+
+figure(1);
+plot(x, fx, 'LineWidth', 2);
+grid on;
+hold on;
+plot(x_diff, fx_diff);
+plot(x, cos(x), 'o');
+
