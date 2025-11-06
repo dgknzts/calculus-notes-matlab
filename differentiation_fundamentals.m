@@ -247,3 +247,122 @@ hold on;
 plot(x_diff, fx_diff);
 plot(x, cos(x), 'o');
 
+%% CRITICAL POINTS !
+clear; clc; close all;
+
+dx = 0.001;
+x = -1.5:dx:1;
+
+fx = x.^2 + x.^3;
+fx_der = diff(fx) / dx;
+x_diff = x(1:end-1);
+
+% Find local minima in abs(derivative) - these are critical points
+local_mins = islocalmin(abs(fx_der));
+critical_idx = find(local_mins);
+
+% Get x and y values at critical points
+critical_x = x_diff(critical_idx);
+critical_y = fx(critical_idx);
+
+% Display results
+fprintf('Found %d critical points:\n', length(critical_x));
+for i = 1:length(critical_x)
+    fprintf('Point %d: x = %.4f, f(x) = %.4f\n', i, critical_x(i), critical_y(i));
+end
+
+% Plot the function with critical points
+figure(1);
+subplot(2,1,1);
+plot(x, fx, 'LineWidth', 2);
+hold on;
+plot(critical_x, critical_y, 'ro', 'MarkerSize', 10, 'LineWidth', 2);
+xlabel('x');
+ylabel('f(x)');
+title('The function');
+legend('Function', 'Critical points');
+grid on;
+hold off;
+
+% Plot the derivative
+subplot(2,1,2);
+plot(x_diff, fx_der, 'LineWidth', 2);
+hold on;
+plot(critical_x, zeros(size(critical_x)), 'ro', 'MarkerSize', 10, 'LineWidth', 2);
+yline(0, '--k');
+xlabel('x');
+ylabel("f'(x)");
+title('Its derivative');
+legend('Derivative', 'Critical points');
+grid on;
+hold off;
+
+%% CRITICAL POINTS - SYMBOLIC
+clear; clc; close all;
+
+% Define symbolic function
+syms x
+fx = x^2 + x^3;
+
+% Take derivative
+fx_der = diff(fx);
+
+% Solve for critical points (where derivative = 0)
+critical_points = solve(fx_der == 0, x);
+
+% Print each critical point with its function value
+for i = 1:length(critical_points)
+    x_val = critical_points(i);
+    y_val = subs(fx, x, x_val);
+    fprintf('Critical point/value: (%s, %s)\n', char(x_val), char(y_val));
+end
+
+%% Generate Random Function
+clear; clc; close all;
+
+syms x
+
+% 1. Create random polynomial (up to 4th order)
+% Random integer coefficients between -5 and +5
+coeffs = randi([-5, 5], 1, 5); % 5 coefficients for x^0 to x^4
+poly_func = coeffs(1) + coeffs(2)*x + coeffs(3)*x^2 + coeffs(4)*x^3 + coeffs(5)*x^4;
+
+% 2. Create two random transcendental functions
+transcendental_funcs = {cos(x), sin(x), log(x), exp(x)};
+
+% Randomly pick 2 different functions
+idx = randperm(4, 2);
+trans1 = transcendental_funcs{idx(1)};
+trans2 = transcendental_funcs{idx(2)};
+
+% Random signs (+1 or -1)
+sign1 = 2*randi([0, 1]) - 1;
+sign2 = 2*randi([0, 1]) - 1;
+
+% 3. Combine everything
+fx = poly_func + sign1*trans1 + sign2*trans2;
+
+% Display the random function
+fprintf('Random function:\n');
+pretty(fx);
+
+% 4. Differentiate
+fx_der = diff(fx);
+fprintf('\nDerivative:\n');
+pretty(fx_der);
+
+% 5. Plot
+figure(1);
+subplot(2,1,1);
+fplot(fx, [-2, 2], 'LineWidth', 2);
+title('Random Function');
+xlabel('x');
+ylabel('f(x)');
+grid on;
+
+subplot(2,1,2);
+fplot(fx_der, [-2, 2], 'LineWidth', 2);
+title('Derivative');
+xlabel('x');
+ylabel("f'(x)");
+grid on;
