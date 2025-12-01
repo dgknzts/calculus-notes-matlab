@@ -28,9 +28,52 @@
 % ( f(x)*g(x) )' = f'(x)*g(x) + f(x)*g'(x) 
 
 
+%% CHAIN RULE
+% f(g(x))' = f'(g(x))*g'(x)
 
+% y = g(x)
+% z  = f(x)
+% dz/dx = dz/dy * dy/dx
 
+%% QUOTIENT RULE
+% (f/g)' = (f'g - fg') / g^2
+% low d-high minus high d-low, square the bottom and away we go!
 
+%% Confirming the product rule
+syms x 
+f(x) = x^2;
+g(x) = cos(x);
 
+fg = diff(f(x) * g(x));
+
+df = diff(f(x));
+dg = diff(g(x));
+fg_manual = df*g(x) + f(x)*dg ;
+
+figure(1);
+fplot(fg, 'LineWidth', 2, 'Marker', 'o');
+hold on
+fplot(fg_manual, 'LineWidth', 2)
+hold off
+
+pretty(fg)
+pretty(fg_manual)
+
+%% Confirm the quatient rule
+clear;
+clc;
+
+syms x
+f(x) = x^2;
+g(x) = cos(x);
+
+fg = diff(f / g);
+
+fg_manual = (diff(f)*g - f*diff(g)) / g^2;
+
+pretty(fg)
+pretty(fg_manual)
+
+%% 
 
 
