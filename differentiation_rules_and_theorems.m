@@ -74,6 +74,38 @@ fg_manual = (diff(f)*g - f*diff(g)) / g^2;
 pretty(fg)
 pretty(fg_manual)
 
-%% 
+%% Chain rule with three functions
+clear;
+clc;
+
+syms x
+f(x) = 3*x^2;
+g(x) = x^3 + log(x);
+h(x) = cos(x);
+
+fgh = f(g(h(x)));
+
+fgh_diff = diff(fgh);
+
+
+figure(2);
+fplot(fgh, 'LineWidth', 2);
+hold on
+fplot(fgh_diff, 'LineWidth', 2);
+xlim([-20 20]);  % Set x-axis limits
+ylim([-100 100]);
+hold off
+
+%% Implicit Differentitation
+% Implicit functions are the functions we cannot define without the
+% circular inference of the function
+% y = 2*x --> this is normal explicit.
+% BUT:
+% x*y = 17*x^cos(y) or sqrt(x*y) = log(sin(x*y)) + 4y^2.
+% We cannnot solve for y, make y (function of x) alone on one side. 
+
+% In implicit differentiation, we take y as y'. Then solve for y'. 
+
+
 
 
