@@ -105,7 +105,76 @@ hold off
 % We cannnot solve for y, make y (function of x) alone on one side. 
 
 % In implicit differentiation, we take y as y'. Then solve for y'. 
+clear; clc;
+syms x y
+
+% Implicit equation xy = 1
+eq = x*y - 1;
+
+% Implicit differentiation: dy/dx = -df/dx / df/dy
+y_prime = -diff(eq, x) / diff(eq, y);
+
+% Solve for explicit form
+y_explicit = solve(eq == 0, y);
+
+% Substitute to get y' without y
+y_prime_explicit = simplify(subs(y_prime, y, y_explicit));
 
 
+% Plot
+figure;
+subplot(1,2,1)
+fimplicit(eq, [-5 5 -5 5], 'b', 'LineWidth', 2)
+title('xy = 1')
+axis equal; grid on
+
+subplot(1,2,2)
+fplot(y_prime_explicit, [-5 5], 'r', 'LineWidth', 2)
+ylim([-10 2])
+title('y'' = -1/x^2')
+grid on
+
+%% Another implicit example:
+clear; clc;
+syms x y
+eq = exp(x^2 + y^2) - x - y;
+
+y_prime = -diff(eq, x) / diff(eq, y);
+y_prime = simplify(y_prime);
+pretty(y_prime)
 
 
+% Plot the implicit function
+figure(1);
+fimplicit(eq, [-2 2 -2 2], 'b', 'LineWidth', 2)
+title('e^{x^2+y^2} = x + y')
+grid on; axis equal
+
+y_explicit = solve(eq == 0, y); %Cannot solve..
+
+%% Differentiate c^x and x^x ...
+clear; clc;
+syms x 
+f = 2^x;
+z = exp(x);
+c = x^x;
+f_d = diff(f);
+c_d = simplify(diff(c));
+
+pretty(f_d)
+pretty(c_d)
+figure(1);
+fplot(f_d)
+hold on
+fplot(f);
+fplot(z);
+fplot(c);
+fplot(c_d)
+xlim([-1, 3])
+ylim([0, 8])
+title('f(x) = 2^x')
+grid on; axis equal
+legend;
+hold off
+
+%% 
