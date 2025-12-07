@@ -177,4 +177,48 @@ grid on; axis equal
 legend;
 hold off
 
+%% HIGHER ORDER DERIVATIVES
+% Second derivative: derivative of derivative
+% Nth order derivative: taking the derivative N times.
+
+% second deriv: d^2y / dx^2 in leibniz notation. or (d^2 / (dx)^2) * y
+% or f'' in lagrange. for third or more: f^(3): parantheses is important.
+
+% Tip: polynomials tend to simplify in higher order derivative.
+% Tip2: transcendental functions tend to get more complicated with more diff
+
+% Some applications: 
+% curve-sketching (inflection points)
+% classifying critical points
+% physics (position, velocity, acceleration, jerk..)
+% engineering...
+
+%% Exercise for derivatives of derivatives
+clear; clc;
+
+syms x
+f = 0.1*x^4 + exp(-x^2) + cos(x);
+
+df = diff(f);
+ddf = diff(df);
+dddf = diff(ddf); % or diff(f, 3), second arg is order.
+
+figure(1);
+subplot(2,2,1)
+fplot(f, "LineWidth", 2);
+title("f")
+ylim([-20 20])
+subplot(2,2,2)
+fplot(df, "LineWidth", 2);
+title("f'")
+ylim([-20 20])
+subplot(2,2,3)
+fplot(ddf, "LineWidth", 2);
+title("f''")
+ylim([-20 20])
+subplot(2,2,4)
+fplot(dddf, "LineWidth", 2);
+title("f^{(3)}")
+ylim([-20 20])
+
 %% 
