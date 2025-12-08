@@ -221,4 +221,92 @@ fplot(dddf, "LineWidth", 2);
 title("f^{(3)}")
 ylim([-20 20])
 
-%% 
+%% L'Hopital's Rule
+% If the limit of a ratio of two functions is indeterminate, try the limit
+% of the ratio of the derivatives
+
+% If you cannot solve a limit problem --> it ended up as 0 / 0 or inf / inf
+% You can take derivative of both upper and lower parts of the function
+% until it is solveable...
+
+% Assumptions before apply:
+% 1) Is expressed as a ratio of functions
+% 2) lim(f/g) is indeterminate
+% 3) f' and g' exist
+% 4) g' is not equal to 0
+
+%% Rolle's Theorem
+% if f(a) = f(c)
+% then this exist: a < b < c s.t. f'(b) = 0
+
+% f(x) must be continuous in [a, c]
+% f(x) must be differentiable in (a, c)
+% f(a) = f(c)
+
+%% Mean Value Theorem
+% f(b) = (f(c) - f(a)) / (c - a)    ,    a < b < c
+% or =
+% yc - ya / xc - xa
+
+% f(x) must be continuous in [a, c]
+% f(x) must be differentiable in (a, c)
+
+% WHY THE NAME IS MEAN VALUE THEOREM (MVT)?
+% EACH OF THIS ANSWERS SAYING THE SAME THING!:
+% -- The slope over an interval equals the average of the instanteous slopes
+% over that interval. 
+% -- The global slope equals the average of the local slopes
+% -- The slope of a secant line is the average of the slopes of all tangent
+% lines. 
+
+%% MVT Algorithm
+clear; clc;
+syms x
+
+f = 2*x^2 - 3*x + 1;
+a = -1;
+c = 2;
+
+[b, slope] = solveMVT(f, x, a, c);
+disp(b)
+disp(slope)
+
+
+% Visualize the above MVT
+figure(1);
+fplot(f, [-2 3], 'b', 'LineWidth', 2)
+hold on
+
+% Slope line
+secant = slope*(x - a) + subs(f, x, a);
+tangent = slope*(x - b) + subs(f, x, b);
+fplot(secant, 'g--', 'LineWidth', 2)
+fplot(tangent, 'r--', 'LineWidth', 2)
+plot(b, double(subs(f, x, b)), 'bo', 'MarkerSize', 10, 'LineWidth', 2)
+plot(a, double(subs(f, x, a)), 'ro', 'MarkerSize', 10, 'LineWidth', 2)
+plot(c, double(subs(f, x, c)), 'ro', 'MarkerSize', 10, 'LineWidth', 2)
+ylim([-1, 10]);
+hold off
+legend('f(x) = x³', 'secant', 'tangent')
+grid on
+
+
+% Function solveMVT:
+function [b, slope] = solveMVT(f, var, a, c)
+    % Derivative of f
+    df = diff(f, var);
+    
+    % MVT: f'(b) = (f(c) - f(a)) / (c - a)
+    % Solve for b
+    slope = (subs(f, var, c) - subs(f, var, a)) / (c - a);
+    
+    % Solve
+    b_all = solve(df == slope, var);
+    
+    % Convert to numeric
+    b_all = double(b_all);
+    
+    % Filter: only keep b where a < b < c
+    b = b_all(b_all > a & b_all < c);
+end
+
