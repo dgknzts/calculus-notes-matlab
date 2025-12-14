@@ -260,7 +260,7 @@ ylim([-20 20])
 % lines. 
 
 %% MVT Algorithm
-clear; clc;
+clear; clc; close all;
 syms x
 
 f = 2*x^2 - 3*x + 1;
@@ -310,3 +310,31 @@ function [b, slope] = solveMVT(f, var, a, c)
     b = b_all(b_all > a & b_all < c);
 end
 
+%% Exercise: 
+% Create a function by multiplying one poly (max ord 5)  with a rand 
+% integer coef between -5 and 5 (exc 0), allow neg powers to create a 
+% function ratio and one transcendental function randomly sampled from
+% cos(x), sin(x), log(x), exp(x)
+clear; clc; close all;
+
+values = [-5:-1, 1:5];   % [-5,-4,-3,-2,-1,1,2,3,4,5]
+rCoef = values(randi(length(values)));
+rOrder = values(randi(length(values)));
+
+funcs = {'sin(x)', 'cos(x)', 'log(x)', 'exp(x)'};
+
+syms x
+f_1 =  rCoef*x^rOrder;
+f_2 = str2sym(funcs(randi(length(funcs))));
+
+f = f_1 * f_2;
+pretty(f)
+
+% Plot rand function
+figure(1);
+subplot(2,1,1)
+fplot(f, 'LineWidth', 2);
+% compute the derivative
+df_analytical = diff(f);
+subplot(2,1,2)
+fplot(df_analytical, 'LineWidth', 2);
