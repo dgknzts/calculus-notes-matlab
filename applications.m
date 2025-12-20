@@ -96,4 +96,147 @@ end
 % Approximation over or under estimate? Depends on the curvature, we can do
 %   second derivative test.
 
+%% Example
+clear; close all; clc;
+syms x real % put real to ignore complex nums
 
+f(x) = abs(sin(x)); %sqrt(x) + 2*x;
+a = (5*pi)/8;
+x0 = pi/2;
+
+L = linApprox(f, x, a, x0);
+disp(L)
+analytic_x0 = double(f(x0));
+disp(analytic_x0)
+
+% % Do it for multiple a's
+a = linspace(-2*pi, 2*pi, 50);
+x0 = mean(a);
+Ls = zeros(size(a));
+
+for i = 1:length(a)
+    Ls(1,i) = linApprox(f, x, a(i), x0);
+end
+
+errors = double(subs(f, x, x0))- Ls;
+
+figure(1);
+subplot(2,1,1)
+plot(a, errors, '-o', 'LineWidth', 2);
+xline(x0, '--k', 'LineWidth', 1);
+subplot(2,1,2)
+fplot(f, 'LineWidth', 2)
+hold on
+plot(a, Ls, '-o', 'LineWidth', 2)
+xline(x0, '--k', 'LineWidth', 1);
+hold off
+
+function L = linApprox(f, x, a, x0)
+    df = diff(f, x, 1);
+    fa = double(subs(f, x, a));
+    dfa = double(subs(df, x, a));
+    L = dfa*(x0 - a) + fa;
+end
+
+%% Newton's Method for finding roots
+% Goal: Finding the x when y = 0. 
+% We start with an x0 point, and draw a tangent line and find the point in
+% that line y = 0. And this will be the next point x1 we will draw a tangent.
+
+% Bad initial guess can lead to lack of convergence (this is usuall in ML)
+% - Pick a initial guess closer to f(xn) = 0
+% f'(xn) = 0
+% - Pick another starting point
+% Unknown or difficulty derivative
+% - Use the "secant method" empirical local slope
+% F(x) gas no real valued roots
+% - Accept this answer, or find minimum value
+
+%% Exercise: Find the real valued roots with solve and newtons method
+clear; clc; close all;
+syms x
+f(x) = cos(x) - x^2; % Change function forfun
+actRoots = solve(f(x), x, "Real", true);
+disp(double(actRoots))
+
+% Implement Newton's Method
+nIter = 10;
+startPoint = pi; % If you make it negative you can find the second root..
+[newtonRoot, eachIter] = newtonMethod(f, x, startPoint, nIter);
+disp(newtonRoot)
+
+figure(1);
+plot(1:nIter, eachIter, '-o', 'LineWidth', 2)
+yline(double(actRoots), '--r', 'LineWidth', 2);
+xlabel('Iteration')
+ylabel('x value')
+legend('Newton iterations', 'Actual root')
+
+figure(2);
+fplot(f, 'LineWidth', 2);
+ylim([-10 10])
+xlim([-1 2])
+yline(0, '--r', 'LineWidth', 2);
+xline(double(actRoots), '--b', 'LineWidth', 2);
+hold on
+for p = 1:nIter
+    plot(eachIter(p), double(f(eachIter(p))), 'ko', 'MarkerSize', 8, 'MarkerFaceColor', 'g')
+end
+hold off
+legend('f(x)', 'y=0', 'Root', 'Iterations')
+
+% Newton function
+function [out, answers] = newtonMethod(f, x, startPoint, nIter)
+    answers = zeros(1, nIter);
+    for i = 1:nIter
+        fx = double(subs(f, x, startPoint));
+        dfx = double(subs(diff(f), x, startPoint));
+        out = startPoint - fx / dfx;
+        startPoint = out;
+        answers(1, i) = out;
+    end
+end
+
+%% Example optimizaiton problem
+% One wants to fence in a rectangle of 400m^2. Shares one side with
+% someone. Other person will pay 50% of the cost of that side. Fencinsing
+% is 100 euro/meter. Find the lengths of the sides that minimze the fencing
+% cost.
+
+clear; clc; close all;
+syms x
+
+% a*b = 400
+% 2*a + b + b/2 = cost function
+% Reduce to one variable -> a = 400/b
+f(x) = 800/x + x + x/2;
+df = diff(f, x);
+df2 = diff(f, x, 2);
+
+min_cost = solve(df, x, "Real", true);
+secondDerivativeTest = double(subs(df2, x, min_cost));
+
+% Filter only minimums (df2 > 0)
+valid_mins = min_cost(secondDerivativeTest > 0);
+optimal_x = double(valid_mins);
+
+% Calculate results
+optimal_a = 400 / optimal_x;  % a = 400/b
+total_cost = double(subs(f, x, optimal_x)) * 100;  % euro
+
+% Print results
+fprintf('Side b (shared): %.2f meters\n', optimal_x)
+fprintf('Side a: %.2f meters\n', optimal_a)
+fprintf('Area: %.2f m²\n', optimal_x * optimal_a)
+
+% Plot
+figure(1);
+fplot(f, [5 150], 'LineWidth', 2)
+hold on
+plot(optimal_x, double(f(optimal_x)), 'ro', 'MarkerSize', 10, 'MarkerFaceColor', 'r')
+hold off
+xlabel('Side b (meters)')
+ylabel('Cost (×100 euro)')
+title('Fencing Cost Optimization')
+legend('Cost function', 'Minimum')
+grid on
