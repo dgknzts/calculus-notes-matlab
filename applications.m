@@ -240,3 +240,50 @@ ylabel('Cost (×100 euro)')
 title('Fencing Cost Optimization')
 legend('Cost function', 'Minimum')
 grid on
+
+%% Gradient Descent
+% 1) Guess a solution
+% 2) Compute the error (cost, minimization objective)
+% 3) Learn from mistakes to improve the next guess
+
+% Problems: cannot find the exact value, local/global minimum etc..
+
+% Gradient descent vs f' = 0
+% GD is better for high dimensional problems (e.g., millions of variables)
+% Used when derivative is unknown or can only be locally estimated
+% "Good enough" solutions are usually okay in ML
+% Most limitations have solutions or mitigations
+
+%% Implement GD
+syms x
+f(x) = 3*x^2 - 3*x + 4;
+df = diff(f, x);
+
+
+nIter = 100;
+learningRate = .01;
+startPoint = 4*rand(1);
+
+
+allEpochs = zeros(1,nIter);
+for i = 1:nIter
+    allEpochs(1, i) = startPoint;
+    direction = subs(df, x, startPoint);
+    startPoint = startPoint - direction * learningRate;
+end
+
+double(startPoint)
+
+% Plot
+figure(1);
+fplot(f, [-2 2], 'b', 'LineWidth', 2)
+hold on
+fplot(df, [-2 2], 'Color', [0.85 0.33 0.1], 'LineWidth', 2)
+plot(allEpochs, double(f(allEpochs)), 'ko', 'MarkerFaceColor', 'k')
+plot(allEpochs, double(subs(df, x, allEpochs)), 'ko', 'MarkerFaceColor', 'k')
+hold off
+
+xlabel('x'); 
+ylabel('f(x)');
+title(sprintf('Local minimum: %.4f', double(startPoint)))
+legend('f(x)', 'df')
