@@ -179,3 +179,214 @@ colorbar
 disp('Second order partial derivatives:')
 disp(['df_xx = ' char(diff(fxy, x, 2))])
 disp(['df_yy = ' char(diff(fxy, y, 2))])
+
+%% Gradients / Grandient Fields
+% Gradient is a vector each elemant corresponds to partial derivative
+% of each variable
+% Nabla (reverse triangle), pronounced as "del"...
+% f_x , f_y <-- partial derivatives
+% Nabla = vector(f_x, f_y) <-- gradients
+
+% + Compact representation of all partial derivatives
+% + Can be used in matrix calculations (e.g., linear algeba, differential equations)
+% + Used to comput directional derivatives
+% + Points to the direction of the biggest increase in the function's "local"
+% landscape
+
+%% Exercise 1:
+clear; clc; close all;
+syms x y
+fxy = x*exp(-(x^2 + y^2)); %fxy = exp(-abs(x*y));
+dfdx = diff(fxy, x, 1);
+dfdy = diff(fxy, y, 1);
+
+[X, Y] = meshgrid(linspace(-3,3,100));
+funcs = {fxy, dfdx, dfdy};
+titles = {'f(x,y)', 'f_x', 'f_y'};
+
+figure(1);
+for i = 1:3
+    subplot(1,3,i)
+    Z = double(subs(funcs{i}, {x,y}, {X,Y}));
+    imagesc([-3 3], [-3 3], Z)
+    axis xy
+    xlabel('x'); ylabel('y')
+    title([titles{i} ' = ' char(funcs{i})])
+end
+
+% Gradient field!!!!!!!!!!
+% Numeric grid
+[X, Y] = meshgrid(linspace(-2, 2, 20));
+
+% Convert symbolic derivatives to numeric
+Zx = double(subs(dfdx, {x, y}, {X, Y}));
+Zy = double(subs(dfdy, {x, y}, {X, Y}));
+
+figure(2);
+fcontour(fxy, [-2 2 -2 2], "Fill","on")
+hold on
+quiver(X, Y, Zx, Zy, 'black')
+hold off
+xlabel('x'); ylabel('y')
+title(['f(x,y) = ' char(fxy)])
+
+%% Exercise: Climb to the peak!
+clear; clc; close all;
+% Develop an algorithm to find the local max.
+%close all; clear; clc;
+syms x y
+fxy = x*exp(-(x^2 + y^2));
+dfdx = diff(fxy, x);
+dfdy = diff(fxy, y);
+
+% Numeric grid
+[X, Y] = meshgrid(linspace(-3, 3, 50));
+Xi = randi([1 length(X)]);
+Yi = randi([1 length(Y)]);
+
+% Num of steps
+maxStep = 100;
+
+% Convert symbolic derivatives to numeric
+Zx = double(subs(dfdx, {x, y}, {X, Y}));
+Zy = double(subs(dfdy, {x, y}, {X, Y}));
+Zf = double(subs(fxy, {x, y}, {X, Y}));
+saveXidx = zeros(length(X), 1);
+saveYidx = zeros(length(Y), 1);
+
+for i = 1:maxStep
+    saveXidx(i) = Xi;
+    saveYidx(i) = Yi;
+    funcValue(i) = Zf(Xi, Yi);
+
+    % Try four different directions:
+    if Xi ~= length(X)
+        p1 = Zf(Xi+1, Yi) - funcValue(i);
+    else
+        p1 = NaN;
+    end
+
+    if Xi ~= 1
+        p2 = Zf(Xi-1, Yi) - funcValue(i);
+    else
+        p2 = NaN;
+    end
+
+    if Yi ~= length(Y)
+        p3 = Zf(Xi, Yi+1) - funcValue(i);
+    else
+        p3 = NaN;
+    end
+
+    if Yi ~=1
+        p4 = Zf(Xi, Yi-1) - funcValue(i);
+    else
+        p4 = NaN;
+    end
+
+
+    [best, idx] = max([p1, p2, p3, p4]);
+    if best <= 1.0e-16
+        break
+    end
+    
+    % Update the locationnn
+    if idx == 1
+        Xi = Xi+1;
+    elseif idx == 2
+        Xi = Xi-1;
+    elseif idx == 3
+        Yi = Yi+1;
+    elseif idx == 4
+        Yi = Yi-1;
+    end
+    
+
+end
+
+figure(1);
+imagesc([-3 3], [-3 3], Zf)
+axis xy
+hold on
+
+colors = hot(i);
+for j = 1:i
+    plot(X(saveXidx(j), saveYidx(j)), Y(saveXidx(j), saveYidx(j)), 'o', ...
+        'MarkerSize', 10, 'MarkerFaceColor', colors(j,:), 'MarkerEdgeColor', 'k')
+end
+hold off
+
+xlabel('x'); ylabel('y')
+title(sprintf('Reached peak in %d steps', i))
+
+%% Now with using gradients
+clear; clc; close all;
+syms x y
+fxy = x*exp(-(x^2 + y^2));
+dfdx = diff(fxy, x);
+dfdy = diff(fxy, y);
+
+N = 51;
+[X, Y] = meshgrid(linspace(-3, 3, N));
+Xi = randi([1 N]);  % row = y direction
+Yi = randi([1 N]);  % col = x direction
+
+maxStep = 100;
+
+Zf = double(subs(fxy, {x, y}, {X, Y}));
+Zx = double(subs(dfdx, {x, y}, {X, Y}));
+Zy = double(subs(dfdy, {x, y}, {X, Y}));
+
+saveXidx = zeros(maxStep, 1);
+saveYidx = zeros(maxStep, 1);
+
+for i = 1:maxStep
+    saveXidx(i) = Xi;
+    saveYidx(i) = Yi;
+    
+    % gx controls Y index (column), gy controls X index (row)
+    gx = Zx(Xi, Yi);  % ∂f/∂x → move in column direction
+    gy = Zy(Xi, Yi);  % ∂f/∂y → move in row direction
+    
+    if abs(gx) < 1e-10 && abs(gy) < 1e-10
+        break
+    end
+    
+    % Move based on gradient
+    if abs(gx) > abs(gy)
+        if gx > 0, Yi = Yi + 1; else, Yi = Yi - 1; end  % x direction = column
+    else
+        if gy > 0, Xi = Xi + 1; else, Xi = Xi - 1; end  % y direction = row
+    end
+    
+    % Boundary fix
+    Xi = max(1, min(N, Xi));
+    Yi = max(1, min(N, Yi));
+    
+    % Stuck check
+    if i > 1 && saveXidx(i) == Xi && saveYidx(i) == Yi
+        break
+    end
+end
+
+% Plot
+figure(1);
+imagesc([-3 3], [-3 3], Zf)
+axis xy
+hold on
+
+colors = parula(i);
+for j = 1:i
+    plot(X(saveXidx(j), saveYidx(j)), Y(saveXidx(j), saveYidx(j)), 'o', ...
+        'MarkerSize', 10, 'MarkerFaceColor', colors(j,:), 'MarkerEdgeColor', 'k')
+end
+hold off
+
+xlabel('x'); ylabel('y')
+title(sprintf('Gradient climb: %d steps', i))
+colorbar
+
+
+
+
+

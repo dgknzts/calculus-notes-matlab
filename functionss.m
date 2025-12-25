@@ -87,7 +87,7 @@ grid on;
 %% Section 5: Maclaurin Series Approximation
 % Mathematical Concept: Maclaurin series for sin(x) = Σ((-1)^(n+1) * x^(2n-1)) / (2n-1)!
 % Demonstrates series convergence and function approximation
-
+clear; clc; close all;
 x = -2*pi:0.1:2*pi;
 y_exact = sin(x);  % Exact sine function
 
