@@ -691,3 +691,4 @@ title('Random Piecewise Function');
 grid on;
 legend('x <= 0', 'x > 0');
 hold off;
+

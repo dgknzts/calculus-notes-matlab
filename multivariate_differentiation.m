@@ -236,8 +236,6 @@ clear; clc; close all;
 %close all; clear; clc;
 syms x y
 fxy = x*exp(-(x^2 + y^2));
-dfdx = diff(fxy, x);
-dfdy = diff(fxy, y);
 
 % Numeric grid
 [X, Y] = meshgrid(linspace(-3, 3, 50));
@@ -248,8 +246,6 @@ Yi = randi([1 length(Y)]);
 maxStep = 100;
 
 % Convert symbolic derivatives to numeric
-Zx = double(subs(dfdx, {x, y}, {X, Y}));
-Zy = double(subs(dfdy, {x, y}, {X, Y}));
 Zf = double(subs(fxy, {x, y}, {X, Y}));
 saveXidx = zeros(length(X), 1);
 saveYidx = zeros(length(Y), 1);
@@ -386,7 +382,80 @@ xlabel('x'); ylabel('y')
 title(sprintf('Gradient climb: %d steps', i))
 colorbar
 
+%% m-D Gradient Descent
+% Algorithm-concept-math all same
+% Perform 1D gradient descent on each direction independently.
+% Its convenient to store all directions in one vector instead of sep vars.
+clear; clc; close all;
+syms x y
+fxy = 3*(1-x)^2*exp(-x^2-(y+1)^2) - 10*(x/5 - x^3 - y^5) * exp(-x^2-y^2)-11/3*exp(-(x+1)^2-y^2);
 
+delf_x = diff(fxy, x);
+delf_y = diff(fxy, y);
+
+figure(1);
+title(['f(x,y) = ' char(fxy)])
+subplot(1,3,1)
+fcontour(fxy, [-3 3 -3 3], 'Fill','on')
+xlabel('x'); ylabel('y')
+subplot(1,3,2)
+fcontour(delf_x, [-3 3 -3 3], 'Fill','on')
+xlabel('x'); 
+subplot(1,3,3)
+fcontour(delf_y, [-3 3 -3 3], 'Fill','on')
+xlabel('x');
+
+nStep = 100;
+[X, Y] = meshgrid(linspace(-3, 3, nStep));
+Zx = double(subs(delf_x, {x, y}, {X, Y}));
+Zy = double(subs(delf_y, {x, y}, {X, Y}));
+
+% Gradient descent
+learnRate = 0.01;
+nEpoch = 500;
+
+% Random start point
+px = 6*rand(1) - 3;
+py = 6*rand(1) - 3;
+
+% Store history
+histX = zeros(1, nEpoch);
+histY = zeros(1, nEpoch);
+
+for i = 1:nEpoch
+    histX(i) = px;
+    histY(i) = py;
+    
+    % Get gradient at current position
+    gx = double(subs(delf_x, {x, y}, {px, py}));
+    gy = double(subs(delf_y, {x, y}, {px, py}));
+    
+    % Update position (descend = subtract gradient)
+    px = px + learnRate * gx;
+    py = py + learnRate * gy;
+end
+
+fprintf('Final position: (%.4f, %.4f)\n', px, py)
+fprintf('Final f(x,y): %.4f\n', double(subs(fxy, {x,y}, {px,py})))
+
+% Plot result
+figure(2);
+fcontour(fxy, [-3 3 -3 3], 'Fill','on')
+hold on
+plot(histX, histY, 'black', 'LineWidth', 3, 'MarkerSize', 5)
+plot(histX(1), histY(1), 'go', 'MarkerSize', 7, 'MarkerFaceColor', 'g')  % Start
+plot(histX(end), histY(end), 'ro', 'MarkerSize', 7, 'MarkerFaceColor', 'r')  % End
+hold off
+xlabel('x'); ylabel('y')
+legend('', 'Path', 'Start', 'End')
+colorbar
+
+
+%% Find exact solution with critical values
+xCritical = solve(delf_x == 0); % WE CANT....
+% It is even two variables... IRL there are thousands of variables...
+
+%% IRL We need empirical solutions!!!!!!!!!!!!!
 
 
 
