@@ -6,10 +6,10 @@
 %% Exercise 1: Compute and plot integral with functions
 dx = 0.01;
 x = -1:dx:4;  % Domain
-fx = x.^3  + 4;
+fx = x.^3  + 20;
 
 [df, idf] = findDerandInt(x, dx, fx, 1);
-
+disp(idf);
 
 function [outDer, outInt] = findDerandInt(x, dx, fx, n)       
     outDer = diff(fx) / dx;
@@ -108,4 +108,57 @@ plot(dxVals, areas, '-s', 'LineWidth', 2, 'MarkerFaceColor', 'w')
 set(gca, 'XDir', 'reverse')  % Invert x-axis
 set(gca, 'XScale', 'log')    % Log scale
 xlabel('Δx')
-ylabel('Area (estimate of definite integral)')
+ylabel('Area')
+
+%% Exercise: Analytical vs Numerical
+clear; clc; close all;
+
+% Analytical
+syms x
+fx = x^3*sin(x) + 3;
+ifx = int(fx, x);
+pretty(ifx)
+
+% Numerical
+dx = 0.2;
+x_n = -3:dx:3;
+fx_n = x_n.^3 .* sin(x_n) + 3;
+
+% Numerical integral
+[~, zeroIdx] = min(abs(x_n - 0));
+idf = cumsum(fx_n) * dx;
+idf = idf - idf(zeroIdx);
+idf = idf + fx_n(zeroIdx);
+
+% Plot
+figure(1);
+fplot(ifx, [-3 3], 'b', 'LineWidth', 2)
+hold on
+plot(x_n, idf, 'ro', 'LineWidth', 2)
+hold off
+legend('Analytical Int', 'Numerical Int', 'Location','best')
+xlabel('x')
+ylabel('F(x)')
+title(char(ifx))
+
+%% Compute Approxatimation Error
+% RMS: Root Mean Square for different deltaXs
+
+dxs = logspace(log10(0.5), log10(0.001), 20); 
+RMS_dxs = zeros(size(dxs));
+
+for i = 1:length(dxs)
+    x_n = -3:dxs(i):3;
+    fx_n = x_n.^3 .* sin(x_n);
+    [~, zeroIdx] = min(abs(x_n - 0));
+    idf = cumsum(fx_n) * dxs(i);
+    idf = idf - idf(zeroIdx);
+    ifx_a = double(subs(ifx, x, x_n));
+    RMS_dxs(i) = mean((ifx_a - idf).^2);
+end
+
+figure(2);
+plot(dxs, RMS_dxs, '-s', 'LineWidth', 2)
+set(gca, 'XScale', 'log', 'XDir', 'reverse')
+xlabel('deltax')
+ylabel('Approx Error (a.u.)')
