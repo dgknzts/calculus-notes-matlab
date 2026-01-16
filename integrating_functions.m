@@ -170,7 +170,7 @@ pretty(int(hx, x, a, b))
 clear; clc; close all;
 
 x = linspace(-2, 11, 500);
-a = 0;
+a = 2;
 b = 10;
 [~,idxa] = min(abs(x-a));
 [~,idxb] = min(abs(x-b));
@@ -178,7 +178,6 @@ b = 10;
 fx = x.^2;
 gx = 10*sin(x);
 hx = x.^2 + 10*sin(x);
-
 
 % "trapz" calculates the numerical integral with trapezoids
 int_f = trapz(x(idxa:idxb), fx(idxa:idxb));
@@ -208,3 +207,4 @@ hold on
 area(x(idxa:idxb), hx(idxa:idxb), 'FaceColor', 'm', 'FaceAlpha', 0.3, 'EdgeColor', 'none');
 hold off
 title(['\int h dx = ', num2str(int_h, '%.2f')], 'Color', 'm');
+
