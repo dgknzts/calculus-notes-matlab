@@ -208,3 +208,52 @@ area(x(idxa:idxb), hx(idxa:idxb), 'FaceColor', 'm', 'FaceAlpha', 0.3, 'EdgeColor
 hold off
 title(['\int h dx = ', num2str(int_h, '%.2f')], 'Color', 'm');
 
+%% Calculating net and total areas
+clear; clc; close all;
+
+% Bounds
+a = 0;
+b = 2;
+
+% Find the roots
+syms x1
+%fx1 = -x1^3 + 3*x1^2 - 2*x1;
+fx1 = sqrt(x1) - x1^2;
+roots = double(solve(fx1 == 0, x1));
+roots = roots(a< roots & roots < b)'; % Filter the roots outside= the bounds
+
+% Define bounds based on number roots and 2 bounds
+points = [a, roots, b];
+
+% Find bound indices
+x = linspace(a-a/20, b+b/20, 500);
+fx = double(subs(fx1, x1, x));
+
+indices = zeros(1, length(points));
+areas = zeros(1, length(points)-1);
+for i = 1:length(points)
+   [~,indices(i)] = min(abs(x-points(i)));
+end
+
+for i = 1:length(areas)
+   areas(i) = trapz(x(indices(i):indices(i+1)), fx(indices(i):indices(i+1)));
+end 
+
+disp(['Net area = ', num2str(sum(areas), '%.2f')])
+disp(['Net area = ', num2str(sum(abs(areas)), '%.2f')])
+
+
+figure(1);
+plot(x, fx, 'black', 'LineWidth', 1.5);
+hold on
+plot(x(indices), fx(indices), 'o', 'LineWidth', 3)
+for i = 1:length(points)-1
+    if sum(fx(indices(i):indices(i+1))) > 0
+        area(x(indices(i):indices(i+1)), fx(indices(i):indices(i+1)), 'FaceColor', 'g', 'FaceAlpha', 0.3, 'EdgeColor', 'none');
+    else
+        area(x(indices(i):indices(i+1)), fx(indices(i):indices(i+1)), 'FaceColor', 'r', 'FaceAlpha', 0.3, 'EdgeColor', 'none');
+    end
+end
+hold off
+
+
