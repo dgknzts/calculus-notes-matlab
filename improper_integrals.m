@@ -76,3 +76,52 @@ ylim([0.5 2.5])
 xlim([min(p_values)-0.5, max(p_values)+0.5])
 grid on
 hold off
+
+%% Improper Trigonometric Integrals
+clear; clc; close all;
+
+f = @(x) cos(x.^2);  % Function handle
+a = pi/4; 
+blist = a:0.1:4*pi;  % Start from a
+
+% Calculate areas using numerical integration
+net_areas = zeros(1, length(blist));
+tot_areas = zeros(1, length(blist));
+
+for j = 1:length(blist)
+    b = blist(j);
+    net_areas(j) = integral(f, a, b);         
+    tot_areas(j) = integral(@(x) abs(f(x)), a, b);  
+end
+
+% Plotting
+figure(1)
+subplot(2,1,1)
+fplot(f, [a, blist(end)], 'LineWidth', 2)
+xlabel('x')
+ylabel('y = cosx^2')
+grid on
+
+subplot(2,1,2)
+hold on
+plot(blist, tot_areas, 'r', 'LineWidth', 2)
+plot(blist, net_areas, 'b', 'LineWidth', 2)
+legend('Total Area |f(x)|', 'Net Area f(x)', 'Location', 'best')
+xlabel('Upper Boundary (b)')
+ylabel('Area')
+grid on
+hold off
+
+%% Exercise
+clear; clc; close all;
+syms x
+
+% Define integrals
+I1 = int(abs(cos(x)), x, 0, inf) ;
+I2 = int(cos(x), x, 0, inf);
+I3 = int(cos(x^2), x, 0, inf);
+
+% Display results
+fprintf('int |cos(x)| dx from 0 to ∞ = %s\n', char(I1))
+fprintf('int cos(x) dx from 0 to ∞ = %s\n', char(I2))
+fprintf('int cos(x²) dx from 0 to ∞ = %s\n', char(I3))
