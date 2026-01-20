@@ -125,3 +125,62 @@ I3 = int(cos(x^2), x, 0, inf);
 fprintf('int |cos(x)| dx from 0 to ∞ = %s\n', char(I1))
 fprintf('int cos(x) dx from 0 to ∞ = %s\n', char(I2))
 fprintf('int cos(x²) dx from 0 to ∞ = %s\n', char(I3))
+
+%% Empirical convergence towards infinity
+clear; clc; close all;
+
+% Parameters
+p_values = linspace(-3, -1.5, 20);  % Range of p values
+zeta_max = 1e5;                      % Upper bound limit
+
+figure(1)
+subplot(1,2,1)
+hold on
+
+x_plot = linspace(1, 10, 200);
+
+for i = 1:length(p_values)
+    p = p_values(i);
+    y = x_plot.^p;
+    
+    % Color gradient from blue to red
+    color = [i/length(p_values), 0, 1 - i/length(p_values)];
+    plot(x_plot, y, 'Color', color, 'LineWidth', 1.5)
+end
+
+xlabel('x')
+ylabel('y = f(x)')
+title('Function curves')
+ylim([0 1])
+grid on
+hold off
+
+
+subplot(1,2,2)
+hold on
+% Range of upper bounds in log scale
+zeta_values = logspace(0, 5, 100); 
+
+for i = 1:length(p_values)
+    p = p_values(i);
+    
+    % Compute definite integral from 1 to zeta
+    % Integral of x^p = x^(p+1)/(p+1)
+    areas = zeros(1, length(zeta_values));
+    
+    for j = 1:length(zeta_values)
+        zeta = zeta_values(j);
+        % Analytical solution: [x^(p+1)/(p+1)] from 1 to zeta
+        areas(j) = (zeta^(p+1) - 1) / (p+1);
+    end
+    
+    % Color gradient
+    color = [i/length(p_values), 0, 1 - i/length(p_values)];
+    semilogx(zeta_values, areas, 'Color', color, 'LineWidth', 1.5)
+end
+set(gca, 'XScale', 'log')
+xlabel('Upper bound')
+ylabel('Definite integral')
+title('Area under f(x) = x^p')
+grid on
+hold off
